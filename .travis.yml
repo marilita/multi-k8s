@@ -15,7 +15,7 @@ after_success:
   - docker build -t marilita83/multi-nginx ./nginx
   - docker build -t marilita83/multi-server ./server
   - docker build -t marilita83/multi-worker ./worker
-#Log in to the docker CLI
+#Log in to the docker CLI and push the images to the docker hub
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push marilita83/multi-client
   - docker push marilita83/multi-nginx
