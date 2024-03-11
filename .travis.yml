@@ -3,13 +3,19 @@ services:
   - docker
 
 before_install:
-  - docker build -t marilita/react-test -f ./client/Dockerfile.dev ./client
+  - docker build -t marilita83/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -e CI=true marilita/react-test npm test -- --coverage
+  - docker run -e CI=true marilita83/react-test npm test -- --coverage
 
 after_success:
-  - docker build -t marilita/multi-client ./client
-  - docker build -t marilita/multi-nginx ./nginx
-  - docker build -t marilita/multi-server ./server
-  - docker build -t marilita/multi-worker ./worker
+  - docker build -t marilita83/multi-client ./client
+  - docker build -t marilita83/multi-nginx ./nginx
+  - docker build -t marilita83/multi-server ./server
+  - docker build -t marilita83/multi-worker ./worker
+#Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push marilita83/multi-client
+  - docker push marilita83/multi-nginx
+  - docker push marilita83/multi-server
+  - docker push marilita83/multi-worker
