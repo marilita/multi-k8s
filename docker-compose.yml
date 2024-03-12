@@ -7,7 +7,7 @@ services:
         limits:
           memory: 128m
     hostname: client
-  server:
+  api:
     image: "marilita83/multi-server"
     deploy:
       resources:
