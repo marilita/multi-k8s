@@ -1,54 +1,43 @@
-version: '3'
+version: "3"
 services:
-  postgres:
-    image: 'postgres:12-alpine'
-    environment:
-      POSTGRES_PASSWORD: mypassword
-    ports:
-      - '1750:5432'
-  redis:
-    image: 'redis:latest'
-  nginx:
-    depends_on:
-      - api
-      - worker
-    restart: always
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./nginx
-    ports:
-      - '3050:80'
-  worker:
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./worker
-    volumes:
-      - /app/node_modules
-      - ./worker:/app
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
   client:
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./client
-    volumes:
-      - /app/node_moules
-      - ./client:/app
+    image: "marilita83/multi-client"
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    hostname: client
+  server:
+    image: "marilita83/multi-server"
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    hostname: api
     environment:
-      - WDS_SOCKET_PORT=0
-  api:
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./server
-    volumes:
-      - /app/node_modules
-      - ./server:/app
+      - REDIS_HOST=$REDIS_HOST
+      - REDIS_PORT=$REDIS_PORT
+      - PGUSER=$PGUSER
+      - PGHOST=$PGHOST
+      - PGDATABASE=$PGDATABASE
+      - PGPASSWORD=$PGPASSWORD
+      - PGPORT=$PGPORT
+  worker:
+    image: "marilita83/multi-worker"
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    hostname: worker
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - PGHOST=postgres
-      - PGDATABASE=postgres
-      - PGPORT=5432
-      - PGUSER=postgres
-      - PGPASSWORD=mypassword
+      - REDIS_HOST=$REDIS_HOST
+      - REDIS_PORT=$REDIS_PORT
+  nginx:
+    image: "marilita83/multi-nginx"
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    hostname: nginx
+    ports:
+      - "80:80"
